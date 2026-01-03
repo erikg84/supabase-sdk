@@ -1,15 +1,14 @@
 plugins {
-    kotlin("multiplatform") version "2.2.0" apply false
-    id("org.jetbrains.compose") version "1.7.3" apply false
+    alias(libs.plugins.kotlin.multiplatform) apply false
+    alias(libs.plugins.android.library) apply false
+    alias(libs.plugins.compose.multiplatform) apply false
+    alias(libs.plugins.compose.compiler) apply false
+    alias(libs.plugins.kotlinx.serialization) apply false
 }
 
 allprojects {
-    group = findProperty("GROUP") as String
-    version = findProperty("VERSION") as String
-    
-    repositories {
-        mavenCentral()
-    }
+    group = "com.dallaslabs.sdk"
+    version = findProperty("version")?.toString()?.takeIf { it != "unspecified" } ?: "1.0.0"
 }
 
 tasks.register("clean", Delete::class) {

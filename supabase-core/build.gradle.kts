@@ -1,40 +1,81 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
-    kotlin("multiplatform")
-    `maven-publish`
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlinx.serialization)
+    id("maven-publish")
 }
 
 kotlin {
     explicitApi()
 
-    jvm()
+    sourceSets.all {
+        languageSettings.optIn("kotlin.time.ExperimentalTime")
+    }
+
+    androidTarget {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_11)
+        }
+        publishLibraryVariants("release", "debug")
+    }
 
     listOf(
-        iosX64(),
         iosArm64(),
         iosSimulatorArm64()
-    ).forEach {
-        it.binaries.framework {
-            baseName = "supabase-core"
+    ).forEach { iosTarget ->
+        iosTarget.binaries.framework {
+            baseName = "SupabaseCore"
             isStatic = true
         }
     }
 
+    applyDefaultHierarchyTemplate()
+
     sourceSets {
         commonMain.dependencies {
-            implementation("io.github.jan-tennert.supabase:postgrest-kt:2.6.1")
-            implementation("io.github.jan-tennert.supabase:gotrue-kt:2.6.1")
-            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
-            implementation("io.ktor:ktor-client-core:2.3.12")
+            api(libs.supabase.postgrest)
+            api(libs.supabase.auth)
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.serialization.kotlinx.json)
+            implementation(libs.kotlinx.serialization.json)
+            api(libs.kotlinx.datetime)
         }
 
-        jvmMain.dependencies {
-            implementation("io.ktor:ktor-client-cio:2.3.12")
+        androidMain.dependencies {
+            implementation(libs.ktor.client.okhttp)
         }
 
         iosMain.dependencies {
-            implementation("io.ktor:ktor-client-darwin:2.3.12")
+            implementation(libs.ktor.client.darwin)
+        }
+
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
         }
     }
 }
 
-configurePublishing()
+android {
+    namespace = "com.dallaslabs.supabase.core"
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
+
+    defaultConfig {
+        minSdk = libs.versions.android.minSdk.get().toInt()
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+}
+
+configurations.all {
+    resolutionStrategy {
+        force("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
+    }
+}
+
+configurePublishing("supabase-core")
