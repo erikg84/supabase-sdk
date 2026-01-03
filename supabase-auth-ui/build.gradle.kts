@@ -1,17 +1,14 @@
 plugins {
-    alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.compose.multiplatform)
-    alias(libs.plugins.compose.compiler)
+    kotlin("multiplatform")
+    id("org.jetbrains.compose")
+    id("org.jetbrains.kotlin.plugin.compose") version "2.2.0"
     `maven-publish`
 }
 
 kotlin {
     explicitApi()
 
-    androidTarget {
-        publishLibraryVariants("release")
-    }
+    jvm()
 
     listOf(
         iosX64(),
@@ -31,32 +28,8 @@ kotlin {
             implementation(compose.foundation)
             implementation(compose.material3)
             implementation(compose.ui)
-            implementation(libs.supabase.compose.auth)
-            implementation(libs.supabase.compose.auth.ui)
-            implementation(libs.kotlinx.coroutines.core)
+            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
         }
-
-        androidMain.dependencies {
-            implementation(libs.kotlinx.coroutines.android)
-        }
-    }
-}
-
-android {
-    namespace = "com.dallaslabs.sdk.supabase.auth.ui"
-    compileSdk = Android.COMPILE_SDK
-
-    defaultConfig {
-        minSdk = Android.MIN_SDK
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-
-    buildFeatures {
-        compose = true
     }
 }
 

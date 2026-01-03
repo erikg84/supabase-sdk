@@ -1,15 +1,12 @@
 plugins {
-    alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.android.library)
+    kotlin("multiplatform")
     `maven-publish`
 }
 
 kotlin {
     explicitApi()
 
-    androidTarget {
-        publishLibraryVariants("release")
-    }
+    jvm()
 
     listOf(
         iosX64(),
@@ -25,23 +22,9 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             api(project(":supabase-core"))
-            implementation(libs.supabase.gotrue)
-            implementation(libs.kotlinx.coroutines.core)
+            implementation("io.github.jan-tennert.supabase:gotrue-kt:2.6.1")
+            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
         }
-    }
-}
-
-android {
-    namespace = "com.dallaslabs.sdk.supabase.auth"
-    compileSdk = Android.COMPILE_SDK
-
-    defaultConfig {
-        minSdk = Android.MIN_SDK
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
     }
 }
 

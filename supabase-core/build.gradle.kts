@@ -1,15 +1,12 @@
 plugins {
-    alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.android.library)
+    kotlin("multiplatform")
     `maven-publish`
 }
 
 kotlin {
     explicitApi()
 
-    androidTarget {
-        publishLibraryVariants("release")
-    }
+    jvm()
 
     listOf(
         iosX64(),
@@ -24,34 +21,19 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(libs.supabase.postgrest)
-            implementation(libs.supabase.gotrue)
-            implementation(libs.kotlinx.coroutines.core)
-            implementation(libs.ktor.client.core)
+            implementation("io.github.jan-tennert.supabase:postgrest-kt:2.6.1")
+            implementation("io.github.jan-tennert.supabase:gotrue-kt:2.6.1")
+            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
+            implementation("io.ktor:ktor-client-core:2.3.12")
         }
 
-        androidMain.dependencies {
-            implementation(libs.kotlinx.coroutines.android)
-            implementation(libs.ktor.client.android)
+        jvmMain.dependencies {
+            implementation("io.ktor:ktor-client-cio:2.3.12")
         }
 
         iosMain.dependencies {
-            implementation(libs.ktor.client.darwin)
+            implementation("io.ktor:ktor-client-darwin:2.3.12")
         }
-    }
-}
-
-android {
-    namespace = "com.dallaslabs.sdk.supabase.core"
-    compileSdk = Android.COMPILE_SDK
-
-    defaultConfig {
-        minSdk = Android.MIN_SDK
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
     }
 }
 
