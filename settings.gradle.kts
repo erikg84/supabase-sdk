@@ -18,4 +18,5 @@ dependencyResolutionManagement {
 include(":supabase-core")
 include(":supabase-db")
 include(":supabase-auth")
+include(":supabase-auth-ui")
 include(":supabase-koin")
