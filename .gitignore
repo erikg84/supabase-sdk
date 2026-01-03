@@ -8,6 +8,7 @@ build/
 # Kotlin
 *.kotlin_module
 *.kotlin_metadata
+.kotlin/
 
 # IntelliJ IDEA
 .idea/
