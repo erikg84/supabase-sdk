@@ -2,8 +2,7 @@ import org.gradle.api.Project
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.create
-import org.gradle.kotlin.dsl.get
+import org.gradle.kotlin.dsl.withType
 
 object Android {
     const val MIN_SDK = 24
@@ -11,7 +10,7 @@ object Android {
     const val TARGET_SDK = 35
 }
 
-fun Project.configurePublishing(publicationName: String = "maven") {
+fun Project.configurePublishing(moduleName: String) {
     extensions.configure<PublishingExtension> {
         repositories {
             maven {
@@ -25,13 +24,15 @@ fun Project.configurePublishing(publicationName: String = "maven") {
         }
 
         publications {
-            create<MavenPublication>(publicationName) {
-                groupId = project.group.toString()
-                artifactId = project.name
-                version = project.version.toString()
+            withType<MavenPublication> {
+                groupId = "com.dallaslabs.sdk"
+                artifactId = when (name) {
+                    "kotlinMultiplatform" -> moduleName
+                    else -> "$moduleName-${name.lowercase()}"
+                }
 
                 pom {
-                    name.set(project.name)
+                    name.set(moduleName)
                     description.set("Kotlin Multiplatform Supabase SDK")
                     url.set("https://github.com/erikg84/supabase-sdk")
 
