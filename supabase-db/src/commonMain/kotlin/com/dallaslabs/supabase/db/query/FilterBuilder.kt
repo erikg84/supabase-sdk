@@ -108,23 +108,24 @@ public class FilterBuilder @PublishedApi internal constructor() {
      */
     @PublishedApi
     internal fun applyTo(builder: PostgrestRequestBuilder) {
-        // Apply filters directly to the builder without nesting another filter block
-        // The builder is already in the correct context (delete { }, update { }, etc.)
         operations.forEach { op ->
-            builder.filter {
-                when (op) {
-                    is FilterOp.Eq -> eq(op.column, op.value)
-                    is FilterOp.Neq -> neq(op.column, op.value)
-                    is FilterOp.Gt -> gt(op.column, op.value)
-                    is FilterOp.Gte -> gte(op.column, op.value)
-                    is FilterOp.Lt -> lt(op.column, op.value)
-                    is FilterOp.Lte -> lte(op.column, op.value)
-                    is FilterOp.Like -> like(op.column, op.pattern)
-                    is FilterOp.Ilike -> ilike(op.column, op.pattern)
-                    is FilterOp.Exact -> exact(op.column, op.value)
-                    is FilterOp.InList -> contains(op.column, op.values)
-                }
-            }
+            applyOperation(builder, op)
+        }
+    }
+
+    @PublishedApi
+    internal fun applyOperation(builder: PostgrestRequestBuilder, op: FilterOp) {
+        when (op) {
+            is FilterOp.Eq -> builder.filter { eq(op.column, op.value) }
+            is FilterOp.Neq -> builder.filter { neq(op.column, op.value) }
+            is FilterOp.Gt -> builder.filter { gt(op.column, op.value) }
+            is FilterOp.Gte -> builder.filter { gte(op.column, op.value) }
+            is FilterOp.Lt -> builder.filter { lt(op.column, op.value) }
+            is FilterOp.Lte -> builder.filter { lte(op.column, op.value) }
+            is FilterOp.Like -> builder.filter { like(op.column, op.pattern) }
+            is FilterOp.Ilike -> builder.filter { ilike(op.column, op.pattern) }
+            is FilterOp.Exact -> builder.filter { exact(op.column, op.value) }
+            is FilterOp.InList -> builder.filter { contains(op.column, op.values) }
         }
     }
 }
