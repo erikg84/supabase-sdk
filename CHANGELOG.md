@@ -15,6 +15,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - This ensures filters work correctly in both direct contexts (DELETE, UPDATE) and nested contexts (SELECT)
 - DELETE queries with `.filter { eq("column", value) }` now properly include WHERE clauses in the SQL request
 
+### Testing
+- Added `FilterBuilderTest.kt` with unit tests validating filter operation storage
+- Tests verify correct handling of: `eq`, `neq`, `gt`, `gte`, `lt`, `lte`, `like`, `ilike`, `exact`, `inList`, and null values
+- All FilterBuilder unit tests pass ✅
+- Added `kotlinx-coroutines-test` dependency for test infrastructure
+
+### Verified SDK Operations
+The SDK provides all database operations required by consumer apps:
+- ✅ SELECT with filters and count
+- ✅ INSERT (single and batch)
+- ✅ UPDATE (full item or partial values) with filters
+- ✅ DELETE with filters (fixed in this release)
+- ✅ UPSERT (single and batch) with conflict handling
+
 ## [1.0.3] - 2026-01-03
 
 ### Added
