@@ -102,11 +102,16 @@ public class FilterBuilder @PublishedApi internal constructor() {
 
     /**
      * Applies all filter operations to a PostgrestRequestBuilder.
+     * This method works in both contexts:
+     * - Direct filter application (delete, update)
+     * - Nested filter blocks (select)
      */
     @PublishedApi
     internal fun applyTo(builder: PostgrestRequestBuilder) {
-        builder.filter {
-            operations.forEach { op ->
+        // Apply filters directly to the builder without nesting another filter block
+        // The builder is already in the correct context (delete { }, update { }, etc.)
+        operations.forEach { op ->
+            builder.filter {
                 when (op) {
                     is FilterOp.Eq -> eq(op.column, op.value)
                     is FilterOp.Neq -> neq(op.column, op.value)
