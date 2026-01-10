@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Sign In screen -->
+    <string name="auth_welcome_title">Welcome Back</string>
+    <string name="auth_welcome_subtitle">Sign in to access your account</string>
+    <string name="auth_email_label">Email</string>
+    <string name="auth_password_label">Password</string>
+    <string name="auth_forgot_password">Forgot Password?</string>
+    <string name="auth_sign_in_button">Sign In</string>
+    <string name="auth_create_account_button">Create Account</string>
+    <string name="auth_continue_without_account">Continue Without Account</string>
+    <string name="auth_secure_message">Your data is encrypted and stored securely</string>
+    <string name="auth_remember_me">Remember me</string>
+
+    <!-- Biometric authentication -->
+    <string name="auth_biometric_login_button">Login with Biometric</string>
+    <string name="auth_login_as">Logging in as</string>
+    <string name="auth_or_divider">or</string>
+
+    <!-- Create Account screen -->
+    <string name="auth_create_title">Create Account</string>
+    <string name="auth_create_subtitle">Join us today</string>
+    <string name="auth_confirm_password_label">Confirm Password</string>
+    <string name="auth_create_button">Create Account</string>
+    <string name="auth_already_have_account">Already have an account? Sign in</string>
+
+    <!-- Forgot Password screen -->
+    <string name="auth_forgot_title">Reset Password</string>
+    <string name="auth_forgot_subtitle">Enter your email to receive a password reset link</string>
+    <string name="auth_send_reset_button">Send Reset Link</string>
+    <string name="auth_back_to_sign_in">Back to Sign In</string>
+    <string name="auth_reset_instructions">Check your email for the password reset link</string>
+
+    <!-- Validation errors -->
+    <string name="auth_error_email_empty">Email cannot be empty</string>
+    <string name="auth_error_email_invalid">Please enter a valid email address</string>
+    <string name="auth_error_password_empty">Password cannot be empty</string>
+    <string name="auth_error_password_short">Password must be at least 6 characters</string>
+    <string name="auth_error_passwords_mismatch">Passwords do not match</string>
+    <string name="auth_error_biometric_not_configured">Biometric login not configured</string>
+
+    <!-- Success messages -->
+    <string name="auth_success_account_created">Account created! Please check your email to confirm your account.</string>
+    <string name="auth_success_reset_email_sent">Password reset email sent to %1$s</string>
+</resources>

@@ -8,7 +8,7 @@ plugins {
 
 allprojects {
     group = "com.dallaslabs.sdk"
-    version = findProperty("version")?.toString()?.takeIf { it != "unspecified" } ?: "1.0.0"
+    version = findProperty("version")?.toString()?.takeIf { it != "unspecified" } ?: "1.1.0"
 }
 
 tasks.register("clean", Delete::class) {

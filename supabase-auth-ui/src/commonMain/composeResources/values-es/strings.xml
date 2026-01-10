@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Sign In screen -->
+    <string name="auth_welcome_title">Bienvenido de Nuevo</string>
+    <string name="auth_welcome_subtitle">Inicia sesión para acceder a tu cuenta</string>
+    <string name="auth_email_label">Correo Electrónico</string>
+    <string name="auth_password_label">Contraseña</string>
+    <string name="auth_forgot_password">¿Olvidaste tu Contraseña?</string>
+    <string name="auth_sign_in_button">Iniciar Sesión</string>
+    <string name="auth_create_account_button">Crear Cuenta</string>
+    <string name="auth_continue_without_account">Continuar sin Cuenta</string>
+    <string name="auth_secure_message">Tus datos están encriptados y almacenados de forma segura</string>
+    <string name="auth_remember_me">Recordarme</string>
+
+    <!-- Biometric authentication -->
+    <string name="auth_biometric_login_button">Iniciar Sesión con Biometría</string>
+    <string name="auth_login_as">Iniciando sesión como</string>
+    <string name="auth_or_divider">o</string>
+
+    <!-- Create Account screen -->
+    <string name="auth_create_title">Crear Cuenta</string>
+    <string name="auth_create_subtitle">Únete hoy</string>
+    <string name="auth_confirm_password_label">Confirmar Contraseña</string>
+    <string name="auth_create_button">Crear Cuenta</string>
+    <string name="auth_already_have_account">¿Ya tienes una cuenta? Inicia sesión</string>
+
+    <!-- Forgot Password screen -->
+    <string name="auth_forgot_title">Restablecer Contraseña</string>
+    <string name="auth_forgot_subtitle">Ingresa tu correo electrónico para recibir un enlace de restablecimiento</string>
+    <string name="auth_send_reset_button">Enviar Enlace de Restablecimiento</string>
+    <string name="auth_back_to_sign_in">Volver a Iniciar Sesión</string>
+    <string name="auth_reset_instructions">Revisa tu correo electrónico para el enlace de restablecimiento de contraseña</string>
+
+    <!-- Validation errors -->
+    <string name="auth_error_email_empty">El correo electrónico no puede estar vacío</string>
+    <string name="auth_error_email_invalid">Por favor ingresa un correo electrónico válido</string>
+    <string name="auth_error_password_empty">La contraseña no puede estar vacía</string>
+    <string name="auth_error_password_short">La contraseña debe tener al menos 6 caracteres</string>
+    <string name="auth_error_passwords_mismatch">Las contraseñas no coinciden</string>
+    <string name="auth_error_biometric_not_configured">Inicio de sesión biométrico no configurado</string>
+
+    <!-- Success messages -->
+    <string name="auth_success_account_created">¡Cuenta creada! Por favor revisa tu correo electrónico para confirmar tu cuenta.</string>
+    <string name="auth_success_reset_email_sent">Correo de restablecimiento enviado a %1$s</string>
+</resources>
