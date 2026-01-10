@@ -23,10 +23,10 @@ class DeleteQueryTest {
     @BeforeTest
     fun setup() {
         // Initialize Supabase with test credentials
-        // Note: This requires actual Supabase test instance
+        // Note: This uses mock credentials for unit testing
         SupabaseCore.initializeIfNeeded {
-            projectUrl = System.getenv("SUPABASE_URL") ?: "https://test.supabase.co"
-            anonKey = System.getenv("SUPABASE_ANON_KEY") ?: "test-key"
+            projectUrl = "https://test.supabase.co"
+            anonKey = "test-key"
         }
         database = SupabaseDatabase.getInstance()
     }
