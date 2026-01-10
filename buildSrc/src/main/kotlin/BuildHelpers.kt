@@ -17,8 +17,8 @@ fun Project.configurePublishing(moduleName: String) {
                 name = "GitHubPackages"
                 url = uri("https://maven.pkg.github.com/erikg84/supabase-sdk")
                 credentials {
-                    username = System.getenv("GITHUB_ACTOR")
-                    password = System.getenv("GITHUB_TOKEN")
+                    username = findProperty("gpr.user")?.toString() ?: System.getenv("GITHUB_ACTOR")
+                    password = findProperty("gpr.token")?.toString() ?: System.getenv("GITHUB_TOKEN")
                 }
             }
         }
