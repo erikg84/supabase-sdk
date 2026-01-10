@@ -27,6 +27,7 @@ kotlin {
         iosTarget.binaries.framework {
             baseName = "SupabaseKoin"
             isStatic = true
+            binaryOption("bundleId", "com.dallaslabs.sdk.supabase.koin")
         }
     }
 

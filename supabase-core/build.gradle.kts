@@ -28,6 +28,7 @@ kotlin {
         iosTarget.binaries.framework {
             baseName = "SupabaseCore"
             isStatic = true
+            binaryOption("bundleId", "com.dallaslabs.sdk.supabase.core")
         }
     }
 

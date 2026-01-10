@@ -31,6 +31,7 @@ kotlin {
         iosTarget.binaries.framework {
             baseName = "SupabaseAuthUI"
             isStatic = true
+            binaryOption("bundleId", "com.dallaslabs.sdk.supabase.auth.ui")
         }
     }
 

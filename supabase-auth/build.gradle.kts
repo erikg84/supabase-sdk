@@ -28,6 +28,7 @@ kotlin {
         iosTarget.binaries.framework {
             baseName = "SupabaseAuth"
             isStatic = true
+            binaryOption("bundleId", "com.dallaslabs.sdk.supabase.auth")
             export(project(":supabase-core"))
         }
     }
