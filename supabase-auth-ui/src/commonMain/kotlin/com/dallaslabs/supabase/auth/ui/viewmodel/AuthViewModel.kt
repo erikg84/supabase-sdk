@@ -26,11 +26,30 @@ public class AuthViewModel(
     private val _viewState = MutableStateFlow(AuthViewState())
     public val viewState: StateFlow<AuthViewState> = _viewState.asStateFlow()
 
+    private var currentPassword: String = ""
+
+    init {
+        // Load saved username if available
+        val savedUsername = callbacks.getSavedUsername()
+        if (savedUsername != null) {
+            updateState { it.copy(email = savedUsername, rememberMe = true) }
+        }
+    }
+
+    /**
+     * Updates the biometric configuration
+     * Call this from your app when biometric settings change
+     */
+    public fun updateBiometricConfig(config: BiometricConfig) {
+        updateState { it.copy(biometricConfig = config) }
+    }
+
     public fun onAction(action: AuthAction) {
         when (action) {
             is AuthAction.EmailChanged -> updateState { it.copy(email = action.email, emailError = null) }
             is AuthAction.PasswordChanged -> updateState { it.copy(password = action.password, passwordError = null) }
             is AuthAction.ConfirmPasswordChanged -> updateState { it.copy(confirmPassword = action.password, confirmPasswordError = null) }
+            is AuthAction.RememberMeChanged -> handleRememberMeChanged(action.remember)
             is AuthAction.SignInClicked -> signIn()
             is AuthAction.CreateAccountClicked -> createAccount()
             is AuthAction.ForgotPasswordClicked -> {}
@@ -40,7 +59,12 @@ public class AuthViewModel(
             is AuthAction.SwitchToForgotPassword -> onSwitchToForgotPassword()
             is AuthAction.ContinueWithoutAccount -> onContinueWithoutAccount()
             is AuthAction.DismissError -> updateState { it.copy(errorMessage = null, successMessage = null) }
+            is AuthAction.BiometricAuthClicked -> handleBiometricAuth()
         }
+    }
+
+    private fun handleRememberMeChanged(remember: Boolean) {
+        updateState { it.copy(rememberMe = remember) }
     }
 
     private fun onSwitchToForgotPassword() {
@@ -94,6 +118,8 @@ public class AuthViewModel(
         if (!validateEmail(state.email)) return
         if (!validatePassword(state.password)) return
 
+        currentPassword = state.password
+
         viewModelScope.launch {
             callbacks.onSignInClick()
             setLoadingState(true)
@@ -101,8 +127,14 @@ public class AuthViewModel(
                 is AuthResult.Success -> {
                     Napier.i("AuthViewModel: Sign in successful")
                     result.user?.uid?.let { userId ->
+                        // Save credentials for biometric login
+                        callbacks.onCredentialsShouldBeSaved(state.email, currentPassword)
+
+                        // Save remember me preference
+                        callbacks.onRememberMeChanged(state.email, state.rememberMe)
+
                         callbacks.onSignInSuccess("email", userId)
-                        callbacks.onAuthSuccess(userId)
+                        callbacks.onAuthSuccess(userId, state.email)
                     }
                 }
                 is AuthResult.Error -> {
@@ -111,6 +143,7 @@ public class AuthViewModel(
                 }
             }
             setLoadingState(false)
+            currentPassword = ""
         }
     }
 
@@ -121,6 +154,8 @@ public class AuthViewModel(
         if (!validatePassword(state.password)) return
         if (!validateConfirmPassword(state.password, state.confirmPassword)) return
 
+        currentPassword = state.password
+
         viewModelScope.launch {
             setLoadingState(true)
             when (val result = authService.createUserWithEmailAndPassword(state.email, state.password)) {
@@ -128,8 +163,15 @@ public class AuthViewModel(
                     if (result.user != null) {
                         // User is already verified (email confirmation disabled)
                         Napier.i("AuthViewModel: Account created and verified")
+
+                        // Save credentials for biometric login
+                        callbacks.onCredentialsShouldBeSaved(state.email, currentPassword)
+
+                        // Save remember me preference
+                        callbacks.onRememberMeChanged(state.email, state.rememberMe)
+
                         callbacks.onSignUpSuccess("email_signup", result.user.uid)
-                        callbacks.onAuthSuccess(result.user.uid)
+                        callbacks.onAuthSuccess(result.user.uid, state.email)
                     } else {
                         // Email confirmation required
                         Napier.i("AuthViewModel: Account created, email confirmation pending")
@@ -148,6 +190,50 @@ public class AuthViewModel(
                     updateState { it.copy(errorMessage = result.message) }
                 }
             }
+            setLoadingState(false)
+            currentPassword = ""
+        }
+    }
+
+    private fun handleBiometricAuth() {
+        val state = _viewState.value
+        val savedUsername = state.biometricConfig.savedUsername
+
+        if (savedUsername == null) {
+            Napier.e("AuthViewModel: No saved username for biometric auth")
+            updateState { it.copy(errorMessage = "Biometric login not configured") }
+            return
+        }
+
+        viewModelScope.launch {
+            setLoadingState(true)
+
+            when (val biometricResult = callbacks.onBiometricAuthRequested(savedUsername)) {
+                is BiometricAuthResult.Success -> {
+                    Napier.i("AuthViewModel: Biometric auth successful, signing in")
+                    when (val authResult = authService.signInWithEmailAndPassword(savedUsername, biometricResult.password)) {
+                        is AuthResult.Success -> {
+                            authResult.user?.uid?.let { userId ->
+                                callbacks.onSignInSuccess("biometric", userId)
+                                callbacks.onAuthSuccess(userId, savedUsername)
+                            }
+                        }
+                        is AuthResult.Error -> {
+                            Napier.e("AuthViewModel: Backend auth failed after biometric: ${authResult.message}")
+                            updateState { it.copy(errorMessage = authResult.message) }
+                        }
+                    }
+                }
+                is BiometricAuthResult.Failed -> {
+                    Napier.e("AuthViewModel: Biometric auth failed: ${biometricResult.reason}")
+                    updateState { it.copy(errorMessage = biometricResult.reason ?: "Biometric authentication failed") }
+                }
+                is BiometricAuthResult.Cancelled -> {
+                    Napier.i("AuthViewModel: Biometric auth cancelled by user")
+                    // No error message for user cancellation
+                }
+            }
+
             setLoadingState(false)
         }
     }
@@ -180,11 +266,11 @@ public class AuthViewModel(
 
     private fun validateEmail(email: String): Boolean {
         if (email.isBlank()) {
-            updateState { it.copy(emailError = "Email cannot be empty") }
+            updateState { it.copy(emailError = ValidationError.EmailEmpty) }
             return false
         }
         if (!email.contains("@") || !email.contains(".")) {
-            updateState { it.copy(emailError = "Please enter a valid email address") }
+            updateState { it.copy(emailError = ValidationError.EmailInvalid) }
             return false
         }
         return true
@@ -192,11 +278,11 @@ public class AuthViewModel(
 
     private fun validatePassword(password: String): Boolean {
         if (password.isBlank()) {
-            updateState { it.copy(passwordError = "Password cannot be empty") }
+            updateState { it.copy(passwordError = ValidationError.PasswordEmpty) }
             return false
         }
         if (password.length < 6) {
-            updateState { it.copy(passwordError = "Password must be at least 6 characters") }
+            updateState { it.copy(passwordError = ValidationError.PasswordTooShort) }
             return false
         }
         return true
@@ -204,7 +290,7 @@ public class AuthViewModel(
 
     private fun validateConfirmPassword(password: String, confirmPassword: String): Boolean {
         if (password != confirmPassword) {
-            updateState { it.copy(confirmPasswordError = "Passwords do not match") }
+            updateState { it.copy(confirmPasswordError = ValidationError.PasswordsMismatch) }
             return false
         }
         return true
