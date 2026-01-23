@@ -38,6 +38,11 @@
     <string name="auth_error_password_short">Password must be at least 6 characters</string>
     <string name="auth_error_passwords_mismatch">Passwords do not match</string>
     <string name="auth_error_biometric_not_configured">Biometric login not configured</string>
+    
+    <!-- Auth errors -->
+    <string name="auth_error_invalid_credentials">Invalid email or password. Please try again.</string>
+    <string name="auth_error_network">Network error. Please check your connection and try again.</string>
+    <string name="auth_error_generic">An error occurred. Please try again.</string>
 
     <!-- Success messages -->
     <string name="auth_success_account_created">Account created! Please check your email to confirm your account.</string>

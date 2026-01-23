@@ -38,6 +38,11 @@
     <string name="auth_error_password_short">La contraseña debe tener al menos 6 caracteres</string>
     <string name="auth_error_passwords_mismatch">Las contraseñas no coinciden</string>
     <string name="auth_error_biometric_not_configured">Inicio de sesión biométrico no configurado</string>
+    
+    <!-- Auth errors -->
+    <string name="auth_error_invalid_credentials">Correo electrónico o contraseña inválidos. Por favor intenta de nuevo.</string>
+    <string name="auth_error_network">Error de red. Por favor verifica tu conexión e intenta de nuevo.</string>
+    <string name="auth_error_generic">Ocurrió un error. Por favor intenta de nuevo.</string>
 
     <!-- Success messages -->
     <string name="auth_success_account_created">¡Cuenta creada! Por favor revisa tu correo electrónico para confirmar tu cuenta.</string>

@@ -139,7 +139,8 @@ public class AuthViewModel(
                 }
                 is AuthResult.Error -> {
                     Napier.e("AuthViewModel: Sign in failed: ${result.message}")
-                    updateState { it.copy(errorMessage = result.message) }
+                    val userFriendlyMessage = mapAuthError(result.message)
+                    updateState { it.copy(errorMessage = userFriendlyMessage) }
                 }
             }
             setLoadingState(false)
@@ -187,7 +188,8 @@ public class AuthViewModel(
                 }
                 is AuthResult.Error -> {
                     Napier.e("AuthViewModel: Account creation failed: ${result.message}")
-                    updateState { it.copy(errorMessage = result.message) }
+                    val userFriendlyMessage = mapAuthError(result.message)
+                    updateState { it.copy(errorMessage = userFriendlyMessage) }
                 }
             }
             setLoadingState(false)
@@ -220,7 +222,8 @@ public class AuthViewModel(
                         }
                         is AuthResult.Error -> {
                             Napier.e("AuthViewModel: Backend auth failed after biometric: ${authResult.message}")
-                            updateState { it.copy(errorMessage = authResult.message) }
+                            val userFriendlyMessage = mapAuthError(authResult.message)
+                            updateState { it.copy(errorMessage = userFriendlyMessage) }
                         }
                     }
                 }
@@ -257,7 +260,8 @@ public class AuthViewModel(
                 }
                 is AuthResult.Error -> {
                     Napier.e("AuthViewModel: Password reset failed: ${result.message}")
-                    updateState { it.copy(errorMessage = result.message) }
+                    val userFriendlyMessage = mapAuthError(result.message)
+                    updateState { it.copy(errorMessage = userFriendlyMessage) }
                 }
             }
             setLoadingState(false)
@@ -298,6 +302,38 @@ public class AuthViewModel(
 
     private fun setLoadingState(isLoading: Boolean) {
         updateState { it.copy(isLoading = isLoading) }
+    }
+
+    /**
+     * Maps raw authentication error messages to user-friendly messages.
+     * Looks for common error patterns and returns appropriate error strings.
+     */
+    private fun mapAuthError(errorMessage: String): String {
+        return when {
+            errorMessage.contains("Invalid login credentials", ignoreCase = true) ||
+            errorMessage.contains("invalid_grant", ignoreCase = true) ||
+            errorMessage.contains("wrong password", ignoreCase = true) ||
+            errorMessage.contains("incorrect password", ignoreCase = true) ||
+            errorMessage.contains("email not found", ignoreCase = true) ||
+            errorMessage.contains("user not found", ignoreCase = true) -> 
+                "Invalid email or password. Please try again."
+            
+            errorMessage.contains("network", ignoreCase = true) ||
+            errorMessage.contains("connection", ignoreCase = true) ||
+            errorMessage.contains("timeout", ignoreCase = true) ||
+            errorMessage.contains("unable to resolve host", ignoreCase = true) -> 
+                "Network error. Please check your connection and try again."
+            
+            errorMessage.contains("email already", ignoreCase = true) ||
+            errorMessage.contains("already registered", ignoreCase = true) ->
+                "An account with this email already exists."
+            
+            errorMessage.contains("rate limit", ignoreCase = true) ||
+            errorMessage.contains("too many", ignoreCase = true) ->
+                "Too many attempts. Please try again later."
+            
+            else -> "An error occurred. Please try again."
+        }
     }
 
     private inline fun updateState(reducer: (AuthViewState) -> AuthViewState) {

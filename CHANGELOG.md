@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.1] - 2026-01-23
+
+### Changed
+- **supabase-auth-ui**: Improved error handling for authentication failures
+  - Replaced raw error messages with user-friendly messages
+  - Added error mapping for common scenarios (invalid credentials, network errors, rate limits)
+  - English and Spanish translations for all error messages
+
+### Fixed
+- **supabase-auth-ui**: Fixed display of verbose error stack traces in authentication screens
+  - Sign in errors now show: "Invalid email or password. Please try again."
+  - Network errors now show: "Network error. Please check your connection and try again."
+  - Generic errors now show: "An error occurred. Please try again."
+
 ## [1.2.0] - 2026-01-23
 
 ### Added
