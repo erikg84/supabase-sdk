@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-01-23
+
+### Added
+- **supabase-auth**: Added `deleteUser()` method to permanently delete the authenticated user's account
+  - Calls Supabase RPC function `delete_own_account` 
+  - Sets auth state to `Unauthenticated` after successful deletion
+  - Returns `SupabaseResult<Unit>` with success or authentication error
+  - Requires PostgreSQL function to be created in Supabase project (see method documentation)
+
+### Changed
+- Updated version from 1.1.0 to 1.2.0 (minor version bump for new feature)
+
+### Notes
+- This version supports Apple App Store Guideline 5.1.1(v) compliance for in-app account deletion
+- Account deletion is permanent and cannot be undone
+- User must be authenticated to delete their account
+
 ## [1.0.4] - 2026-01-04
 
 ### Added
