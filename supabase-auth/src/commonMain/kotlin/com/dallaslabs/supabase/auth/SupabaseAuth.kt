@@ -474,6 +474,44 @@ public class SupabaseAuth(
     }
 
     /**
+     * Deletes the current user's account permanently.
+     * This action cannot be undone.
+     *
+     * Note: Requires a Postgres function named 'delete_own_account' to be created in your
+     * Supabase project. The function should delete the authenticated user from auth.users.
+     * The user must be authenticated to call this function.
+     *
+     * Required Postgres function:
+     * ```sql
+     * CREATE OR REPLACE FUNCTION delete_own_account()
+     * RETURNS void
+     * LANGUAGE plpgsql
+     * SECURITY DEFINER
+     * AS $$
+     * BEGIN
+     *   DELETE FROM auth.users WHERE id = auth.uid();
+     * END;
+     * $$;
+     * ```
+     *
+     * @return Result indicating success or an error
+     */
+    public suspend fun deleteUser(): SupabaseResult<Unit> {
+        return try {
+            client.postgrest.rpc("delete_own_account")
+            _authState.value = AuthState.Unauthenticated
+            SupabaseResult.Success(Unit)
+        } catch (e: Exception) {
+            SupabaseResult.Failure(
+                SupabaseError.Authentication(
+                    message = e.message ?: "Failed to delete user account",
+                    cause = e
+                )
+            )
+        }
+    }
+
+    /**
      * Refreshes the current session.
      *
      * @return Result containing the refreshed user or an error
