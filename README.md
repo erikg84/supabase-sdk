@@ -32,6 +32,82 @@ The SDK is configured to publish to GitHub Packages under `com.dallaslabs.sdk`.
 ./gradlew publish
 ```
 
+### Publishing to Maven Local
+
+To publish all modules to your local Maven repository for testing:
+
+```bash
+./gradlew publishToMavenLocal
+```
+
+To publish a specific module:
+
+```bash
+./gradlew :supabase-core:publishToMavenLocal
+```
+
+#### What Gets Published
+
+Each module publishes **4 separate artifacts** per platform:
+
+1. **kotlinMultiplatform** - KMP metadata (`supabase-core`)
+2. **Android** - AAR library (`supabase-core-android`)
+3. **iOS arm64** - Kotlin/Native library (`supabase-core-iosarm64`)
+4. **iOS simulator arm64** - Kotlin/Native library (`supabase-core-iossimulatorarm64`)
+
+Published artifacts location: `~/.m2/repository/com/dallaslabs/sdk/`
+
+#### Consuming Locally Published Artifacts
+
+**In a KMP Project:**
+```kotlin
+// settings.gradle.kts
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+// build.gradle.kts
+dependencies {
+    implementation("com.dallaslabs.sdk:supabase-core:1.2.1")
+    implementation("com.dallaslabs.sdk:supabase-auth:1.2.1")
+    implementation("com.dallaslabs.sdk:supabase-auth-ui:1.2.1") // Compose Multiplatform only
+}
+```
+
+**In a Native Android Project:**
+```kotlin
+// settings.gradle.kts
+dependencyResolutionManagement {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+}
+
+// app/build.gradle.kts
+dependencies {
+    implementation("com.dallaslabs.sdk:supabase-core-android:1.2.1")
+    implementation("com.dallaslabs.sdk:supabase-auth-android:1.2.1")
+    // Note: supabase-auth-ui requires Compose Multiplatform
+}
+```
+
+**In a Native iOS Project:**
+
+iOS frameworks are built in `build/bin/iosArm64/releaseFramework/` and `build/bin/iosSimulatorArm64/releaseFramework/`. Build them with:
+
+```bash
+./gradlew :supabase-core:linkReleaseFrameworkIosArm64
+./gradlew :supabase-core:linkReleaseFrameworkIosSimulatorArm64
+```
+
+Then add the `.framework` files to your Xcode project.
+
+**Important Notes:**
+- `supabase-auth-ui` contains Compose Multiplatform UI and requires a KMP app with Compose support
+- Other modules (`supabase-core`, `supabase-auth`, `supabase-db`, `supabase-koin`) work with both native and KMP apps
+
 ## Android Support
 
 Android support requires the Android Gradle Plugin and Google Maven repository access. To add Android support:
