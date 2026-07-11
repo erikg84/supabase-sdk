@@ -160,7 +160,7 @@ public class SupabaseAuth(
     ): SupabaseResult<AuthUser> {
         _authState.value = AuthState.Loading
         return try {
-            client.auth.signUpWith(Email) {
+            val signedUpUser = client.auth.signUpWith(Email) {
                 this.email = email
                 this.password = password
                 metadata?.let { meta ->
@@ -172,11 +172,20 @@ public class SupabaseAuth(
                 }
             }
             refreshAuthState()
-            val user = currentUser
+            // Prefer the active session's user (email confirmation disabled → signed in).
+            // When confirmation is required there is no session, but signUpWith still
+            // returns the created UserInfo — surface it as a Success with
+            // emailConfirmed=false so callers can show a "check your email" prompt.
+            // Returning Failure here (the old behavior) made a successful confirm-required
+            // signup look like an error to the UI.
+            val user = currentUser ?: signedUpUser?.let { AuthUser.fromUserInfo(it) }
             if (user != null) {
+                if (!user.emailConfirmed) {
+                    _authState.value = AuthState.Unauthenticated
+                }
                 SupabaseResult.Success(user)
             } else {
-                // User created but needs email confirmation
+                // No user returned at all — treat as a genuine failure.
                 _authState.value = AuthState.Unauthenticated
                 SupabaseResult.Failure(
                     SupabaseError.Authentication(
